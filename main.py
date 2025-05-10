@@ -1,4 +1,5 @@
 import mysql.connector
+from colorama import Fore, Back, Style
 
 db = mysql.connector.connect(
     host = "localhost",
@@ -18,56 +19,48 @@ def print_question_set(subject, subject_subtype):
                     myCursor.execute("SELECT * FROM English WHERE question_id = 1")
                 case 2: 
                     myCursor.execute("SELECT * FROM English WHERE question_id = 2")
+        case 2:
+            match subject_subtype:
+                case 1:
+                    myCursor.execute("SELECT * FROM Math WHERE question_id = 1")
+                case 2: 
+                    myCursor.execute("SELECT * FROM Math WHERE question_id = 2")
    
     for question in myCursor:
             questions_count += 1
-            print(question[1])
-            print("A:", question[2])
-            print("B:", question[3])
-            print("C:", question[4])
-            print("D:", question[5])
+            print(Fore.RED + question[1])
+            print(Fore.GREEN + "1:", question[2])
+            print(Fore.GREEN + "2:", question[3])
+            print(Fore.GREEN + "3:", question[4])
+            print(Fore.GREEN + "4:", question[5])
             #print("Answer Index:", question[6])
-            print("-" * 30)
-            answer = input("Answer: ")
+            answer = int(input("Answer: "))
             if(answer == question[6]):
                 print("Correct!")
                 correct_answers += 1
             else:
-                print("Wrong! answer: " + question[6])
-    print("You answered " + correct_answers + "/" + questions_count + "correct")
+                print("Wrong! answer: " + str(question[6]))
+            print("-" * 30)
+    print("You answered " + str(correct_answers) + "/" + str(questions_count) + "correct")
 
 
 
 myCursor = db.cursor()
 
 def get_questions():
-    subject_answer = int(input("What you would like to practice? \n(1) English (2) Math \n"))
+    subject_answer = int(input(Fore.YELLOW + "What you would like to practice? \n(1) English (2) Math \n"))
     if(subject_answer == 1):
         subtype_answer = int(input("What subtype you would like to practice? \n(1) Sentence completion (2) Restatements"))
-        print_question_set(subject_answer, subject_answer)
-
-#Make fractions look like real math equations    
-def vertical_fraction(numerator, denominator):
-    width = max(len(str(numerator)), len(str(denominator)))
-    top = str(numerator).center(width)
-    line = "-" * width
-    bottom = str(denominator).center(width)
-    return f"{top}\n{line}\n{bottom}"
+    else:
+        subtype_answer = int(input("What subtype you would like to practice? \n(1) Equations (2) "))
+    print_question_set(subject_answer, subtype_answer)
 
 def main():
-    #print("x = " + vertical_fraction("-b +/- sqrt(b^2 - 4ac)", "2a"))
+    create_math_table()
     get_questions()
 
-main()
-
-#def create_tables():
-    #myCursor.execute("CREATE TABLE Test (name varchar(50))")  Create a table
-    #myCursor.execute("DROP TABLE Test")  Delete a table
-    #create_english_table()
-
-
-#def create_english_table():
-    # myCursor.execute("CREATE TABLE English (" \
+def create_math_table():
+    # myCursor.execute("CREATE TABLE Math (" \
     # " question_id tinyint UNSIGNED," \
     # " question VARCHAR(500)," \
     # " option_1 VARCHAR(500)," \
@@ -78,13 +71,15 @@ main()
     # " id int PRIMARY KEY AUTO_INCREMENT)"
     # )
     
-    # --! question_id - 1: Sentence completion 2: Restatements 3: Reading comprehension !--
+    #--! question_id - 1: Equations 2: Square roots and exponentiation !--
 
-    #myCursor.execute("INSERT INTO English (question_id, question, option_1, option_2, option_3, option_4, answer) VALUES (%s, %s, %s, %s, %s, %s, %s)", (2, "The United States is the largest producer of oranges in the world.", "The United States is the largest country in the world that grows oranges.", "More oranges are sold in the United States than in any other country.", "The oranges produced in the United States are the largest in the world.", "No other country grows as many oranges as the United States.", 4))
+    myCursor.execute("INSERT INTO Math (question_id, question, option_1, option_2, option_3, option_4, answer) VALUES (%s, %s, %s, %s, %s, %s, %s)", (2,"a and c are whole numbers, 0<a<c \n a**c = c**a \n c=? " ,"5" ,"6","3", "4" , 4))
 
-    #myCursor.execute("UPDATE English SET answer = '3' WHERE id = '11'")  --! Update the table !--
-    #db.commit()
-    #myCursor.execute("SELECT * FROM English")
+    #myCursor.execute("DELETE FROM Math WHERE id = '1'")  #--! Update the table !--
+    db.commit()
+    #myCursor.execute("SELECT * FROM Math")
 
     #for x in myCursor:
         #print(x)
+
+main()
